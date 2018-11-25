@@ -9,6 +9,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -47,16 +48,17 @@ namespace GeneticApp
             int edgesNumber = lines.Count();
             List<Edge> edges = new List<Edge>();
             int edgeIndex = 0;
-            string stringSeparator = " ";
+            string stringSeparator = "\t";
             foreach (string l in lines)
             {
-                int[] values = l.Split(stringSeparator.ToCharArray(), StringSplitOptions.None).Select(s => int.Parse(s)).ToArray();
+                string[] values = l.Split(stringSeparator.ToCharArray(), StringSplitOptions.None);
+                int[] numericValues = values.Select(s => int.Parse(s)).ToArray();
 
                 // Krawędź może być przechodzona w obu kierunkach
-                edges.Add(new Edge(values[0], values[1], values[2], edgeIndex));
+                edges.Add(new Edge(numericValues[0], numericValues[1], numericValues[2], edgeIndex));
 
                 // Ddodawana jest także w odwróconej wersji
-                edges.Add(new Edge(values[1], values[0], values[2], edgeIndex));
+                edges.Add(new Edge(numericValues[1], numericValues[0], numericValues[2], edgeIndex));
 
                 //Krawędź i jej odwrócona wersja mają ten sam indeks(dla łatwiejszego odnajdowania)
                 edgeIndex++;
@@ -80,21 +82,40 @@ namespace GeneticApp
             timer.Stop();
 
             Chromosome bestChromosome = ga.BestChromosome as Chromosome;
-            int currentEdgeIndex = int.Parse(bestChromosome.GetGene(0).Value.ToString());
+            int currentEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(0).Value, CultureInfo.InvariantCulture);
             Edge currentEdge = edges[currentEdgeIndex];
             int startVertex = currentEdge.VertexA;
             int totalCost = currentEdge.Cost;
-            string verticesSequence = currentEdge.VertexA + "-" + currentEdge.VertexB;
+            string verticesSequence = currentEdge.VertexA.ToString() + "-" + currentEdge.VertexB.ToString();
 
             resultBox.Text += $"Funkcja dopasowania najlepszego rozwiązania wynosi: {bestChromosome.Fitness}\n";
             for (int i = 1; i < bestChromosome.Length; i++)
             {
-                currentEdgeIndex = int.Parse(bestChromosome.GetGene(i).Value.ToString());
+                currentEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(i).Value, CultureInfo.InvariantCulture);
                 currentEdge = edges[currentEdgeIndex];
+                /*if (currentEdge.Visited)
+                {
+                    int nextIndex = i + 1;
+                    if (nextIndex == bestChromosome.Length)
+                    {
+                        nextIndex = 0;
+                    }
+                    int nextEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(nextIndex).Value, CultureInfo.InvariantCulture);
+                    int previousEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(i-1).Value, CultureInfo.InvariantCulture);
+                    if (currentEdge.VertexA == edges[nextEdgeIndex].VertexB)
+                    {
+                        continue;
+                    }
+                    if (currentEdge.VertexB == edges[previousEdgeIndex].VertexA)
+                    {
+                        continue;
+                    }
+
+                }*/
                 currentEdge.Visited = true;
-                edges.SingleOrDefault(e => e.VertexA == currentEdge.VertexB && e.VertexB == currentEdge.VertexA).Visited = true;
+                edges.Find(e => e.VertexA == currentEdge.VertexB && e.VertexB == currentEdge.VertexA).Visited = true;
                 totalCost += currentEdge.Cost;
-                verticesSequence += "-" + currentEdge.VertexB;
+                verticesSequence += "-" + currentEdge.VertexB.ToString();
 
                 if (Fitness.AllEdgesVisited(edges))
                 {
@@ -103,11 +124,11 @@ namespace GeneticApp
                         break;
                     }
 
-                    Edge possibleEdge = edges.SingleOrDefault(e => e.VertexA == currentEdge.VertexB && e.VertexB == startVertex);
+                    Edge possibleEdge = edges.Find(e => e.VertexA == currentEdge.VertexB && e.VertexB == startVertex);
                     if (possibleEdge != null)
                     {
                         totalCost += possibleEdge.Cost;
-                        verticesSequence += "-" + possibleEdge.VertexB;
+                        verticesSequence += "-" + possibleEdge.VertexB.ToString();
                         break;
                     }
                 }

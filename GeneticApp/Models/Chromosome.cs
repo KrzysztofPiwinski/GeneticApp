@@ -14,14 +14,16 @@ namespace GeneticApp.Models
         {
             edgesNumber = edgesQuantity;
             edges = _edges;
+            List<Edge> neighbours;
+            int selectedEdgeIndex;
             int[] edgesIndexes = new int[edgesNumber]; //RandomizationProvider.Current.GetUniqueInts(edgesQuantity, 0, edgesQuantity);
             Random randomizationProvider = new Random();
             edgesIndexes[0] = randomizationProvider.Next(edgesNumber / 4);
 
             for (int i = 1; i < edgesNumber; i++)
             {
-                List<Edge> neighbours = edges[edgesIndexes[i - 1]].GetNeighbours(edges);
-                int selectedEdgeIndex = randomizationProvider.Next(neighbours.Count);
+                neighbours = edges[edgesIndexes[i - 1]].GetNeighbours(edges);
+                selectedEdgeIndex = randomizationProvider.Next(neighbours.Count);
                 edgesIndexes[i] = edges.IndexOf(neighbours[selectedEdgeIndex]);
             }
 

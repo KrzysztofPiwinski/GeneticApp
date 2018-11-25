@@ -22,12 +22,18 @@ namespace GeneticApp.Models
 
         public List<Edge> GetNeighbours(List<Edge> edges)
         {
-            return edges.Where(e => IsNextTo(e)).ToList();
-        }
+            List<Edge> neighbours = edges.Where(e => e.IsNextTo(this)).ToList();
+            return neighbours;
 
+        }
         public bool IsNextTo(Edge edge)
         {
-            return VertexA == edge.VertexB;
+            bool result = false;
+            if (this.VertexA == edge.VertexB)
+            {
+                result = true;
+            }
+            return result;
         }
     }
 }

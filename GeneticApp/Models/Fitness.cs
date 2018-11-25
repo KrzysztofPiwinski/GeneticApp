@@ -1,43 +1,62 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GeneticApp.Models
 {
+
     internal class Fitness : IFitness
     {
-        private List<Edge> _edges { get; set; }
 
-        public Fitness(List<Edge> edges)
+        public List<Edge> Edges { get; private set; }
+
+        public Fitness(List<Edge> EdgesArg)
         {
-            _edges = edges;
+            Edges = EdgesArg;
         }
 
         public double Evaluate(IChromosome chromosome)
         {
-            Gene[] genes = chromosome.GetGenes();
-            double distanceSum = 0.0;
-            int lastEdgeIndex = int.Parse(genes[0].Value.ToString());
+            var genes = chromosome.GetGenes();
+            var distanceSum = 0.0;
+            var lastEdgeIndex = Convert.ToInt32(genes[0].Value, CultureInfo.InvariantCulture);
 
-            // Węzeł początkowy
-            int startingPoint = _edges[int.Parse(genes[0].Value.ToString())].VertexA;
+            int startingPoint = Edges[Convert.ToInt32(genes[0].Value, CultureInfo.InvariantCulture)].VertexA; // węzeł początkowy
             for (int i = 0; i < genes.Length; i++)
             {
-                int edgeIndex = int.Parse(genes[i].Value.ToString());
-                Edge edge = _edges[edgeIndex];
-
-                // Znalezienie odwrotej krawędzi
-                Edge reverseEdge = _edges.SingleOrDefault(e => e.VertexA == edge.VertexB && e.VertexB == edge.VertexA);
-
-                // Oznaczenie krawędzi i jej odwrotności jako oznaczona
-                edge.Visited = true;
-                reverseEdge.Visited = true;
-
-                if (i != 0 && edge.VertexA != _edges[int.Parse(genes[i - 1].Value.ToString())].VertexB)
+                int edgeIndex = Convert.ToInt32(genes[i].Value, CultureInfo.InvariantCulture);
+                Edge edge = Edges[edgeIndex];
+                Edge reverseEdge = Edges.Find(e => e.VertexA == edge.VertexB && e.VertexB == edge.VertexA); // znalezienie odwrotej krawędzi
+               /* if (edge.Visited)
                 {
-                    // Jeśli ścieżka nie jest poprawna koszt jest znacząco zwiększany
-                    distanceSum += edge.Cost * 1000;
+                    int nextIndex = i + 1;
+                    if (nextIndex == genes.Length)
+                    {
+                        nextIndex = 0;
+                    }
+                    int nextEdgeIndex = Convert.ToInt32(genes[nextIndex].Value, CultureInfo.InvariantCulture);
+                    int previousEdgeIndex = Convert.ToInt32(genes[i - 1].Value, CultureInfo.InvariantCulture);
+                    if (edge.VertexA == Edges[nextEdgeIndex].VertexB)
+                    {
+                        continue;
+                    }
+                    if (edge.VertexB == Edges[previousEdgeIndex].VertexA)
+                    {
+                        continue;
+                    }
+
+                }*/
+                edge.Visited = true; // krawędź została odwiedzona
+                reverseEdge.Visited = true; // odwrotność krawędzi została odwiedzona
+
+                if (i != 0 && edge.VertexA != Edges[Convert.ToInt32(genes[i - 1].Value, CultureInfo.InvariantCulture)].VertexB)
+                {
+                    distanceSum += edge.Cost * 1000; //jeśli ścieżka nie jest poprawna koszt jest znacząco zwiększany
                     lastEdgeIndex = edgeIndex;
                 }
                 else
@@ -45,37 +64,46 @@ namespace GeneticApp.Models
                     distanceSum += edge.Cost;
                     lastEdgeIndex = edgeIndex;
                 }
-
-                // Sprawdzenie czy ścieżka jest zamknięta i czy wszystkie krawędzie zostały odwiedzone
-                if (AllEdgesVisited(_edges))
+                if (AllEdgesVisited(Edges)) // sprawdzenie czy ścieżka jest zamknięta i czy wszystkie krawędzie zostały odwiedzone
                 {
                     if (edge.VertexB == startingPoint)
                     {
                         break;
                     }
-
-                    Edge possibleEdge = _edges.SingleOrDefault(e => e.VertexA == edge.VertexB && e.VertexB == startingPoint);
+                    Edge possibleEdge = Edges.Find(e => e.VertexA == edge.VertexB && e.VertexB == startingPoint);
                     if (possibleEdge != null)
                     {
                         distanceSum += possibleEdge.Cost;
                         break;
                     }
+
                 }
             }
-
-            if (!AllEdgesVisited(_edges))
+            if (!AllEdgesVisited(Edges))
             {
                 distanceSum *= 1000;
             }
+            foreach (Edge e in Edges)
+            {
+                e.Visited = false;
+            }
 
-            _edges.ForEach(e => e.Visited = false);
+            var fitness = 1.0 / distanceSum;
 
-            return 1.0 / distanceSum;
+
+            return fitness;
+
         }
-
         public static bool AllEdgesVisited(List<Edge> edges)
         {
-            return edges.All(e => e.Visited);
+            foreach (var e in edges)
+            {
+                if (e.Visited == false)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
