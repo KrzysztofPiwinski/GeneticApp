@@ -1,0 +1,19 @@
+﻿<Window x:Class="GeneticApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GeneticApp"
+        mc:Ignorable="d"
+        Title="Genetic app" Height="320" Width="658">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="14*" />
+            <ColumnDefinition Width="93*" />
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="22" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="400" Grid.ColumnSpan="2" />
+        <Button x:Name="button" Content="Wybierz plik..." HorizontalAlignment="Left" Margin="338,10,0,0" VerticalAlignment="Top" Width="100" Height="22" Click="ChooseFile_Click" Grid.Column="1" />
+        <Button x:Name="submitButton" Content="Oblicz" HorizontalAlignment="Left" Margin="448,10,0,0" VerticalAlignment="Top" Width="100" Height="22" Click="submitButton_Click" Grid.Column="1" />
+        <TextBox x:Name="resultBox" Margin="10,50,10,10" AcceptsReturn="True" TextWrapping="Wrap" Grid.ColumnSpan="2" IsReadOnly="True" />
+    </Grid>
+</Window>
