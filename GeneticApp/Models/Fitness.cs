@@ -32,7 +32,7 @@ namespace GeneticApp.Models
                 int edgeIndex = Convert.ToInt32(genes[i].Value, CultureInfo.InvariantCulture);
                 Edge edge = Edges[edgeIndex];
                 Edge reverseEdge = Edges.Find(e => e.VertexA == edge.VertexB && e.VertexB == edge.VertexA); // znalezienie odwrotej krawędzi
-               /* if (edge.Visited)
+                if (edge.Visited)
                 {
                     int nextIndex = i + 1;
                     if (nextIndex == genes.Length)
@@ -40,21 +40,19 @@ namespace GeneticApp.Models
                         nextIndex = 0;
                     }
                     int nextEdgeIndex = Convert.ToInt32(genes[nextIndex].Value, CultureInfo.InvariantCulture);
-                    int previousEdgeIndex = Convert.ToInt32(genes[i - 1].Value, CultureInfo.InvariantCulture);
-                    if (edge.VertexA == Edges[nextEdgeIndex].VertexB)
+                    if (edge.Index == Edges[nextEdgeIndex].Index)
                     {
-                        continue;
+                        if (!Fitness.AllEdgesVisited(Edges) && edge.VertexB != startingPoint)
+                        {
+                            i++;
+                            continue;
+                        }
                     }
-                    if (edge.VertexB == Edges[previousEdgeIndex].VertexA)
-                    {
-                        continue;
-                    }
-
-                }*/
+                }
                 edge.Visited = true; // krawędź została odwiedzona
                 reverseEdge.Visited = true; // odwrotność krawędzi została odwiedzona
 
-                if (i != 0 && edge.VertexA != Edges[Convert.ToInt32(genes[i - 1].Value, CultureInfo.InvariantCulture)].VertexB)
+                if (i != 0 && edge.VertexA != Edges[lastEdgeIndex].VertexB)
                 {
                     distanceSum += edge.Cost * 1000; //jeśli ścieżka nie jest poprawna koszt jest znacząco zwiększany
                     lastEdgeIndex = edgeIndex;
