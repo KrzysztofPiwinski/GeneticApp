@@ -64,11 +64,11 @@ namespace GeneticApp
                 edgeIndex++;
             }
 
-            EliteSelection selection = new EliteSelection();
+            TournamentSelection selection = new TournamentSelection();
             ThreeParentCrossover crossover = new ThreeParentCrossover();
             TworsMutation mutation = new TworsMutation();
             Fitness fitness = new Fitness(edges);
-            Chromosome chromosome = new Chromosome(4 * edgesNumber, edges);
+            Chromosome chromosome = new Chromosome(5 * edgesNumber, edges);
             Population population = new Population(200, 400, chromosome);
 
             GeneticAlgorithm ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
@@ -148,7 +148,6 @@ namespace GeneticApp
             }
             fitness.Evaluate(bestChromosome);
             resultBox.Text += $"Ścieżka: {verticesSequence}\n";
-            resultBox.Text += $"Ocieżka: {orirginalVerticesSequence}\n";
             resultBox.Text += $"Koszt najlepszego rozwiązania: {totalCost}\n";
             resultBox.Text += $"Czas wykonania: {timer.Elapsed.ToString(@"hh\:mm\:ss\.ff")}\n";
         }
