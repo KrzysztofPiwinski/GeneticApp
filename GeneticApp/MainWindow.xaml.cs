@@ -66,7 +66,7 @@ namespace GeneticApp
 
             TournamentSelection selection = new TournamentSelection();
             ThreeParentCrossover crossover = new ThreeParentCrossover();
-            TworsMutation mutation = new TworsMutation();
+            DisplacementMutation mutation = new DisplacementMutation();
             Fitness fitness = new Fitness(edges);
             Chromosome chromosome = new Chromosome(5 * edgesNumber, edges);
             Population population = new Population(200, 400, chromosome);
@@ -82,73 +82,77 @@ namespace GeneticApp
             timer.Stop();
 
             Chromosome bestChromosome = ga.BestChromosome as Chromosome;
+            resultBox.Text += $"Funkcja dopasowania najlepszego rozwiązania wynosi: {bestChromosome.Fitness}\n";
+
+            #region niepotrzebneWyznaczanieSciezki
+
+            /*  
             int currentEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(0).Value, CultureInfo.InvariantCulture);
             Edge currentEdge = edges[currentEdgeIndex];
             int startVertex = currentEdge.VertexA;
             int totalCost = currentEdge.Cost;
             string verticesSequence = currentEdge.VertexA.ToString() + "-" + currentEdge.VertexB.ToString();
             string orirginalVerticesSequence= currentEdge.VertexA.ToString() + "-" + currentEdge.VertexB.ToString();
-
-            Edge originalEdge;
-            for (int i = 1; i < bestChromosome.Length; i++)
-            {
-                originalEdge = edges[Convert.ToInt32(bestChromosome.GetGene(i).Value, CultureInfo.InvariantCulture)];
-                orirginalVerticesSequence += "-" + originalEdge.VertexB.ToString();
-            }
-
-                resultBox.Text += $"Funkcja dopasowania najlepszego rozwiązania wynosi: {bestChromosome.Fitness}\n";
-            for (int i = 1; i < bestChromosome.Length; i++)
-            {
-                currentEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(i).Value, CultureInfo.InvariantCulture);
-                currentEdge = edges[currentEdgeIndex];
-               
-
-               if (currentEdge.Visited)
+             * 
+             * 
+             * Edge originalEdge;
+           for (int i = 1; i < bestChromosome.Length; i++)
+           {
+               originalEdge = edges[Convert.ToInt32(bestChromosome.GetGene(i).Value, CultureInfo.InvariantCulture)];
+               orirginalVerticesSequence += "-" + originalEdge.VertexB.ToString();
+           }*/
+            /*    for (int i = 1; i < bestChromosome.Length; i++)
                 {
-                    int nextIndex = i + 1;
-                    if (nextIndex == bestChromosome.Length)
+                    currentEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(i).Value, CultureInfo.InvariantCulture);
+                    currentEdge = edges[currentEdgeIndex];
+
+
+                   if (currentEdge.Visited)
                     {
-                        nextIndex = 0;
-                    }
-                    int nextEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(nextIndex).Value, CultureInfo.InvariantCulture);
-                    if (currentEdge.Index == edges[nextEdgeIndex].Index)
-                    {
-                        if(!Fitness.AllEdgesVisited(edges)&& currentEdge.VertexB != startVertex)
+                        int nextIndex = i + 1;
+                        if (nextIndex == bestChromosome.Length)
                         {
-                            i++;
-                            continue;
+                            nextIndex = 0;
                         }
-                       
-                    }          
-                }
-                currentEdge.Visited = true;
-                edges.Find(e => e.VertexA == currentEdge.VertexB && e.VertexB == currentEdge.VertexA).Visited = true;
-                totalCost += currentEdge.Cost;
-                verticesSequence += "-" + currentEdge.VertexB.ToString();
+                        int nextEdgeIndex = Convert.ToInt32(bestChromosome.GetGene(nextIndex).Value, CultureInfo.InvariantCulture);
+                        if (currentEdge.Index == edges[nextEdgeIndex].Index)
+                        {
+                            if(!Fitness.AllEdgesVisited(edges)&& currentEdge.VertexB != startVertex)
+                            {
+                                i++;
+                                continue;
+                            }
 
-                if (Fitness.AllEdgesVisited(edges))
+                        }          
+                    }
+                    currentEdge.Visited = true;
+                    edges.Find(e => e.VertexA == currentEdge.VertexB && e.VertexB == currentEdge.VertexA).Visited = true;
+                    totalCost += currentEdge.Cost;
+                    verticesSequence += "-" + currentEdge.VertexB.ToString();
+
+                    if (Fitness.AllEdgesVisited(edges))
+                    {
+                        if (currentEdge.VertexB == startVertex)
+                        {
+                            break;
+                        }
+
+                        Edge possibleEdge = edges.Find(e => e.VertexA == currentEdge.VertexB && e.VertexB == startVertex);
+                        if (possibleEdge != null)
+                        {
+                            totalCost += possibleEdge.Cost;
+                            verticesSequence += "-" + possibleEdge.VertexB.ToString();
+                            break;
+                        }
+                    }
+                }
+                foreach (Edge e in edges)
                 {
-                    if (currentEdge.VertexB == startVertex)
-                    {
-                        break;
-                    }
-
-                    Edge possibleEdge = edges.Find(e => e.VertexA == currentEdge.VertexB && e.VertexB == startVertex);
-                    if (possibleEdge != null)
-                    {
-                        totalCost += possibleEdge.Cost;
-                        verticesSequence += "-" + possibleEdge.VertexB.ToString();
-                        break;
-                    }
-                }
-            }
-            foreach (Edge e in edges)
-            {
-                e.Visited = false;
-            }
-            fitness.Evaluate(bestChromosome);
-            resultBox.Text += $"Ścieżka: {verticesSequence}\n";
-            resultBox.Text += $"Koszt najlepszego rozwiązania: {totalCost}\n";
+                    e.Visited = false;
+                }*/
+            #endregion
+            resultBox.Text += $"Ścieżka: {bestChromosome.finalPath}\n";
+            resultBox.Text += $"Koszt najlepszego rozwiązania: {1/bestChromosome.Fitness}\n";
             resultBox.Text += $"Czas wykonania: {timer.Elapsed.ToString(@"hh\:mm\:ss\.ff")}\n";
         }
     }

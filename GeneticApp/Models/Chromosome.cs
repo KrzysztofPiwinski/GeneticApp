@@ -9,6 +9,7 @@ namespace GeneticApp.Models
     {
         private readonly int edgesNumber;
         private readonly List<Edge> edges;
+        public string finalPath;
 
         public Chromosome(int edgesQuantity, List<Edge> _edges) : base(edgesQuantity)
         {

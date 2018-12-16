@@ -23,11 +23,15 @@ namespace GeneticApp.Models
         public double Evaluate(IChromosome chromosome)
         {
             var genes = chromosome.GetGenes();
-            var distanceSum = 0.0;
-            var lastEdgeIndex = Convert.ToInt32(genes[0].Value, CultureInfo.InvariantCulture);
-
             int startingPoint = Edges[Convert.ToInt32(genes[0].Value, CultureInfo.InvariantCulture)].VertexA; // węzeł początkowy
-            for (int i = 0; i < genes.Length; i++)
+            var lastEdgeIndex = Convert.ToInt32(genes[0].Value, CultureInfo.InvariantCulture);
+            Edge currentEdge = Edges[lastEdgeIndex]; 
+            Chromosome cr = chromosome as Chromosome;
+            cr.finalPath = currentEdge.VertexA.ToString() + "-" +currentEdge.VertexB.ToString();
+            var distanceSum = (float)currentEdge.Cost;
+            
+
+            for (int i = 1; i < genes.Length; i++)
             {
                 int edgeIndex = Convert.ToInt32(genes[i].Value, CultureInfo.InvariantCulture);
                 Edge edge = Edges[edgeIndex];
@@ -54,12 +58,13 @@ namespace GeneticApp.Models
 
                 if (i != 0 && edge.VertexA != Edges[lastEdgeIndex].VertexB)
                 {
-                    distanceSum += edge.Cost * 1000; //jeśli ścieżka nie jest poprawna koszt jest znacząco zwiększany
+                    distanceSum =float.MaxValue; //jeśli ścieżka nie jest poprawna koszt jest znacząco zwiększany
                     lastEdgeIndex = edgeIndex;
                 }
                 else
                 {
                     distanceSum += edge.Cost;
+                    cr.finalPath += "-" + edge.VertexB.ToString();
                     lastEdgeIndex = edgeIndex;
                 }
                 if (AllEdgesVisited(Edges)) // sprawdzenie czy ścieżka jest zamknięta i czy wszystkie krawędzie zostały odwiedzone
@@ -72,6 +77,7 @@ namespace GeneticApp.Models
                     if (possibleEdge != null)
                     {
                         distanceSum += possibleEdge.Cost;
+                        cr.finalPath += "-" + possibleEdge.VertexB.ToString();
                         break;
                     }
 
@@ -79,7 +85,7 @@ namespace GeneticApp.Models
             }
             if (!AllEdgesVisited(Edges))
             {
-                distanceSum *= 1000;
+                distanceSum = float.MaxValue;
             }
             foreach (Edge e in Edges)
             {
