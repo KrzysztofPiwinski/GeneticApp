@@ -17,7 +17,7 @@ namespace GeneticApp.Models
             edges = _edges;
             List<Edge> neighbours;
             int selectedEdgeIndex;
-            int[] edgesIndexes = new int[edgesNumber]; //RandomizationProvider.Current.GetUniqueInts(edgesQuantity, 0, edgesQuantity);
+            int[] edgesIndexes = new int[edgesNumber];
             Random randomizationProvider = new Random();
             edgesIndexes[0] = randomizationProvider.Next(edgesNumber / 5);
 

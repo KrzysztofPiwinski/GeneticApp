@@ -28,12 +28,8 @@ namespace GeneticApp.Models
         }
         public bool IsNextTo(Edge edge)
         {
-            bool result = false;
-            if (this.VertexA == edge.VertexB)
-            {
-                result = true;
-            }
-            return result;
+            return this.VertexA == edge.VertexB;
+
         }
     }
 }

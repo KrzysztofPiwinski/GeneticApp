@@ -100,14 +100,7 @@ namespace GeneticApp.Models
         }
         public static bool AllEdgesVisited(List<Edge> edges)
         {
-            foreach (var e in edges)
-            {
-                if (e.Visited == false)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return edges.All(e => e.Visited);
         }
     }
 }
